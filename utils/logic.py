@@ -1,4 +1,5 @@
 # This python module contains logic for the program
+from data.models import Enterprise
 
 
 def home_header():
@@ -17,3 +18,15 @@ def home_header():
     print("[3]: Mute employee")
     print("[4]: Dismiss employee")
     print()
+
+
+def enterprise_instance(name: str) -> Enterprise:
+    return Enterprise(name=name)
+
+
+def hire_employee(enterprise: Enterprise) -> None:
+    enterprise.hire_employee()
+
+
+def display_employees(enterprise: Enterprise) -> None:
+    enterprise.display_employees()

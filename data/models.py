@@ -3,14 +3,117 @@
 
 class Enterprise():
 
-    def __init__(self, name: str, employees: dict[str | object]):
+    def __init__(self, name: str):
         self.name: str = name
-        self.employees: dict[str | object] = employees
+        self.employees: dict[str | object] = {}
     
     
     def hire_employee(self) -> None:
         # This method enables the enterprise to hire any category of employee
-        pass
+        print()
+
+        name: str = input("Enter employee name [e.g. John Doe]: ")
+        status: str = input("Enter employee status [permanent | temporal | seller]: ")
+
+        if status == "permanent":
+            fixed_salary: float = float(input(f"Enter fixed salary for {name} [e.g. 200000]: "))
+            try:
+                married: str = input(f"Is {name} married [yes | no]: ")
+                if married.lower() == "yes":
+                    try:
+                        num_children: int = int(input(f"How many children does {name} have [e.g. 1]: "))
+                        monthly_bonus: float = float(input(f"Enter monthly bonus for {name} [e.g. 50000]: "))
+                        new_perm_emp: PermanentEmployee = PermanentEmployee(
+                            name=name, 
+                            status=status,
+                            fixed_salary=fixed_salary,
+                            monthly_bonus=monthly_bonus,
+                            marital_status="married",
+                            num_children=num_children
+                        )
+                        
+                        # add new permanent employee to enterprise employee dictionary
+                        self.employees[name] = new_perm_emp
+                        print(f"{name} is officially a {status} employee for {self.name}")
+                    except ValueError:
+                        print("Error: number of children must be an integer greater than 1.")
+                        print("Operation aborted.\n")
+                else:
+                    new_perm_emp: PermanentEmployee = PermanentEmployee(
+                            name=name, 
+                            status=status,
+                            fixed_salary=fixed_salary,
+                            marital_status="not married",
+                    )
+                    # add new permanent employee to enterprise employee dictionary
+                    self.employees[name] = new_perm_emp
+                    print(f"{name} is officially a {status} employee for {self.name}")
+            except ValueError:
+                print("Error: invalid input to marriage question.")
+                print("Operation aborted.\n")
+    
+        elif status == "temporal":
+            try:
+                hourly_salary: float = float(input(f"Hourly salary for {name} [e.g. 2500]: "))
+                new_temp_emp: TemporalEmployee = TemporalEmployee(
+                    name=name,
+                    status=status,
+                    hourly_salary=hourly_salary
+                )
+                # add temporal employee to enterprise employee dictionary
+                self.employees[name] = new_temp_emp
+                print(f"{name} is officially a {status} employee for {self.name}")
+            except ValueError:
+                print("Error: enter a valid amount.")
+                print("Operation aborted.\n")
+        
+        elif status == "seller":
+            try:
+                hourly_salary: float = float(input(f"Hourly salary for {name} [e.g. 2500]: "))
+                commission: float = float(input(f"Commission for {name} [e.g. 0.1]: "))
+                new_seller_emp: Seller = Seller(
+                    name=name,
+                    status=status,
+                    hourly_salary=hourly_salary,
+                    commission=commission
+                )
+                # add seller employee to enterprise employee dictionary
+                self.employees[name] = new_seller_emp
+                print(f"{name} is officially a {status} employee for {self.name}")
+            except ValueError:
+                print("Error: Invalid value for hourly salary or commission entered.")
+                print("Operation aborted.\n")
+    
+
+    def display_employees(self):
+        # This method prints out all the employees currently working for the enterprise with their details
+        print()
+
+        print(" "*27, "**********Employees**********")
+        print()
+
+        counter: int = 1
+
+        for (key, value) in self.employees.items():
+            print(f"[{counter}] {key}\n")
+            print(f"Status: {value.status}")
+            if value.status == "permanent":
+                print(f"Marital status: {value.marital_status}")
+                print(f"Number of children: {value.num_children}")
+                print(f"Monthly bonus: {value.monthly_bonus}")
+                print(f"Fixed Salary: {value.fixed_salary}")
+                print(f"Days worked: {value.days_worked}")
+            if value.status == "temporal":
+                print(f"Hourly salary: {value.hourly_salary}")
+                print(f"Hours worked: {value.hours_worked}")
+            if value.status == "seller":
+                print(f"Sold volume: {value.sold_volume}")
+                print(f"Commission: {value.commission}")
+            print(f"Cumulated salary: {value.cumulated}")
+            print()
+            print("-"*30)
+            print()
+            counter += 1
 
 
 class Employee():
@@ -73,7 +176,7 @@ class Seller(TemporalEmployee):
     def __init__(
         self, 
         name: str,
-        status: str = "temporal",
+        status: str = "seller",
         hourly_salary: float = 2500,
         hours_worked: float = 0.0,
         sold_volume: float = 0.0,

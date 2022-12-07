@@ -1,21 +1,46 @@
 # This is the entry point to the python program
 import sys
-from utils.logic import home_header
+from utils.logic import home_header, enterprise_instance, hire_employee, display_employees
+from data.models import Enterprise
 
 
 if __name__ == "__main__":
+
     home_header()
 
+    # creating Enterprise instance at startup
+    enterprise: Enterprise = enterprise_instance(name="Jeff Inc.")
+
     try:
-        choice: int = int(input("Your choice: "))
-        if choice == 0:
-            print("\nThank you for using the program.\nGoodbye!\n")
-            sys.exit()
-        elif choice == 1:
-            pass
-        else:
-            print("Enter a valid choice next time.")
-    except TypeError:
-        print("Error: you did not enter a valid number.")
+        
+        while True:
+
+            choice: int = int(input("Your choice: "))
+
+            if choice == 0:
+                print("\nThank you for using the program.\nGoodbye!\n")
+                sys.exit()
+
+            elif choice == 1:
+                hire_employee(enterprise=enterprise)
+                home_header()
+                
+            elif choice == 2:
+                display_employees(enterprise=enterprise)
+                home_header()
+
+            elif choice == 3:
+                # mute_employee()
+                home_header()
+                
+            elif choice == 4:
+                # dismiss_employee()
+                home_header()
+                
+            else:
+                print("\nEnter a valid choice (0, 1, 2, 3 or 4) next time.\n")
+
+    except ValueError:
+        print("\nError: you did not enter a valid number (0, 1, 2, 3 or 4).\n")
 
     print()
