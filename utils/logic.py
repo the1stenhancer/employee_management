@@ -2,6 +2,8 @@
 from data.models import Enterprise
 
 
+# headers
+
 def home_header():
     print()
     print(" "*20, "*"*45)
@@ -20,6 +22,22 @@ def home_header():
     print()
 
 
+def display_header():
+    print()
+
+    print(" "*27, "********** Employees **********")
+    print()
+
+
+def mute_header():
+    print()
+
+    print(" "*27, "********** Mute Employee **********")
+    print()
+
+
+# Helper functions 
+
 def enterprise_instance(name: str) -> Enterprise:
     return Enterprise(name=name)
 
@@ -29,4 +47,14 @@ def hire_employee(enterprise: Enterprise) -> None:
 
 
 def display_employees(enterprise: Enterprise) -> None:
+    display_header()
     enterprise.display_employees()
+
+
+def mute_employee(enterprise: Enterprise) -> None:
+    mute_header()
+    name: str = input("Enter employee name [e.g. John Doe]: ")
+    current_role: str = input("Enter current role [e.g. permanent]: ")
+    new_role: str = input("Enter new role [e.g. temporal]: ")
+    enterprise.mute_employee(name=name, current_role=current_role, new_role=new_role)
+    pass

@@ -1,6 +1,6 @@
 # This is the entry point to the python program
 import sys
-from utils.logic import home_header, enterprise_instance, hire_employee, display_employees
+from utils.logic import home_header, enterprise_instance, hire_employee, display_employees, mute_employee
 from data.models import Enterprise
 
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
                 home_header()
 
             elif choice == 3:
-                # mute_employee()
+                mute_employee(enterprise=enterprise)
                 home_header()
                 
             elif choice == 4:

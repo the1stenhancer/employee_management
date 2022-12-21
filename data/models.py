@@ -1,6 +1,13 @@
 # This is python module contains the classes necessary for the proper functioning of the program
 
 
+# global variable representing hourly salary for temporal employees:
+hourly_salary: float = 2500
+
+# global variable representing commission on sales for seller employees:
+commission: float = 0.1
+
+
 class Enterprise():
 
     def __init__(self, name: str):
@@ -87,10 +94,6 @@ class Enterprise():
 
     def display_employees(self):
         # This method prints out all the employees currently working for the enterprise with their details
-        print()
-
-        print(" "*27, "**********Employees**********")
-        print()
 
         counter: int = 1
 
@@ -114,6 +117,50 @@ class Enterprise():
             print("-"*30)
             print()
             counter += 1
+    
+
+    def mute_employee(self, name: str, current_role: str, new_role: str) -> None:
+        # check if new_role is an actual role in the enterprise
+        if new_role in ("permanent", "temporal", "seller"):
+            # check that name is a valid employee in enterprise
+            if name in self.employees.keys():
+                # collect employee instance from enterprise employees database
+                employee: object = self.employees[name]
+                # verify that employee status matches current_role
+                if employee.status == current_role:
+                    # check if current_role is equal to new_role
+                    if current_role == new_role:
+                        print(f"\nCannot mute {name} from {current_role} to {new_role}: they are the same.\n")
+                    else:
+                        # if current_role is permanent
+                        if current_role == "permanent":
+                            # if new_role is temporal
+                            if new_role == "temporal":
+                                hours_worked: float = employee.cumulated / hourly_salary
+                                muted_employee: TemporalEmployee = TemporalEmployee(
+                                    name=name,
+                                    hours_worked=hours_worked
+                                )
+                                self.employees[name] = muted_employee
+                                
+                            elif new_role == "seller":
+                                sold_volume: float = employee.cumulated / commission
+                                muted_employee: Seller = Seller(
+                                    name=name,
+                                    sold_volume=sold_volume
+                                )
+                                self.employees[name] = muted_employee
+                            print(f"\nSuccessfully muted {name} from a {current_role} to {new_role} employee.\n")
+                        elif current_role == "temporal":
+                            pass
+                        elif current_role == "seller":
+                            pass
+                else:
+                    print(f"\n{name} is a {employee.status} employee, not a {current_role}.\n")
+            else:
+                print(f"\n{name} is not an employee in this enterprise.\n")
+        else:
+            print(f"'{new_role}' is not an employee category in this enterprise.\n")
 
 
 class Employee():
@@ -145,7 +192,10 @@ class PermanentEmployee(Employee):
     
 
     def cumul_salary(self) -> float:
-        salary: float = (self.days_worked * (self.fixed_salary + self.monthly_bonus)) / 20
+        if self.marital_status == "married":
+            salary: float = (self.days_worked * (self.fixed_salary + self.monthly_bonus)) / 20
+        else:
+            salary: float = (self.days_worked * self.fixed_salary) / 20
         self.cumulated += salary
         return self.cumulated
 
@@ -156,7 +206,7 @@ class TemporalEmployee(Employee):
         self, 
         name: str, 
         status: str = "temporal", 
-        hourly_salary: float = 2500, 
+        hourly_salary: float = hourly_salary, 
         hours_worked: float = 0.0
     ):
         super().__init__(name, status)
@@ -177,10 +227,10 @@ class Seller(TemporalEmployee):
         self, 
         name: str,
         status: str = "seller",
-        hourly_salary: float = 2500,
+        hourly_salary: float = hourly_salary,
         hours_worked: float = 0.0,
         sold_volume: float = 0.0,
-        commission: float = 0.1
+        commission: float = commission
     ):
         super().__init__(name, status, hourly_salary, hours_worked)
         self.sold_volume: float = sold_volume
