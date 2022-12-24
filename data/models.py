@@ -130,7 +130,7 @@ class Enterprise():
                 if employee.status == current_role:
                     # check if current_role is equal to new_role
                     if current_role == new_role:
-                        print(f"\nCannot mute {name} from {current_role} to {new_role}: they are the same.\n")
+                        print(f"\n[Error]: Cannot mute {name} from {current_role} to {new_role}: they are the same.\n")
                     else:
                         # if current_role is permanent
                         if current_role == "permanent":
@@ -144,6 +144,7 @@ class Enterprise():
                                 self.employees[name] = muted_employee
                                 
                             elif new_role == "seller":
+                                # if new_role is seller
                                 sold_volume: float = employee.cumulated / commission
                                 muted_employee: Seller = Seller(
                                     name=name,
@@ -156,11 +157,11 @@ class Enterprise():
                         elif current_role == "seller":
                             pass
                 else:
-                    print(f"\n{name} is a {employee.status} employee, not a {current_role}.\n")
+                    print(f"\n[Error]: {name} is a {employee.status} employee, not {current_role}.\n")
             else:
-                print(f"\n{name} is not an employee in this enterprise.\n")
+                print(f"\n[Error]: {name} is not an employee in this enterprise.\n")
         else:
-            print(f"'{new_role}' is not an employee category in this enterprise.\n")
+            print(f"\n[Error]: '{new_role}' is not an employee category in this enterprise.\n")
 
 
 class Employee():
