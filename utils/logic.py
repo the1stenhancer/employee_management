@@ -36,10 +36,26 @@ def mute_header():
     print()
 
 
+def dismiss_header():
+    print()
+
+    print(" "*27, "********** Dismiss Employee **********")
+    print()
+
+
 # Helper functions 
 
 def enterprise_instance(name: str) -> Enterprise:
     return Enterprise(name=name)
+
+
+def enterprise_employees(enterprise: Enterprise) -> None:
+    print("Enterprise employees:\n")
+    i: int = 1
+    for name in enterprise.employees.keys():
+        print(f"[{i}] {name} ({enterprise.employees[name].status})", sep=" ")
+        i += 1
+    print()
 
 
 def hire_employee(enterprise: Enterprise) -> None:
@@ -53,8 +69,15 @@ def display_employees(enterprise: Enterprise) -> None:
 
 def mute_employee(enterprise: Enterprise) -> None:
     mute_header()
+    enterprise_employees(enterprise=enterprise)
     name: str = input("Enter employee name [e.g. John Doe]: ")
     current_role: str = input("Enter current role [e.g. permanent]: ")
     new_role: str = input("Enter new role [e.g. temporal]: ")
     enterprise.mute_employee(name=name, current_role=current_role, new_role=new_role)
-    pass
+
+
+def dismiss_employee(enterprise: Enterprise) -> None:
+    dismiss_header()
+    enterprise_employees(enterprise=enterprise)
+    name: str = input("Which employee is to be fired [e.g. John Doe]: ")
+    enterprise.dismiss_employee(name=name)

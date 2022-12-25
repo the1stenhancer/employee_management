@@ -7,6 +7,12 @@ hourly_salary: float = 2500
 # global variable representing commission on sales for seller employees:
 commission: float = 0.1
 
+# global variable representing monthly bonus for married employees that have kids
+mb: float = 50000
+
+# global variable representing fixed salary for permanent employees
+fs: float = 300000
+
 
 class Enterprise():
 
@@ -61,10 +67,12 @@ class Enterprise():
     
         elif status == "temporal":
             try:
+                hours_worked: float = float(input(f"Hours worked by {name} [e.g. 60.5]: "))
                 hourly_salary: float = float(input(f"Hourly salary for {name} [e.g. 2500]: "))
                 new_temp_emp: TemporalEmployee = TemporalEmployee(
                     name=name,
                     status=status,
+                    hours_worked=hours_worked,
                     hourly_salary=hourly_salary
                 )
                 # add temporal employee to enterprise employee dictionary
@@ -76,12 +84,16 @@ class Enterprise():
         
         elif status == "seller":
             try:
+                hours_worked: float = float(input(f"Hours worked by {name} [e.g. 60.5]: "))
                 hourly_salary: float = float(input(f"Hourly salary for {name} [e.g. 2500]: "))
+                sold_volume: float = float(input(f"Sold volume for {name} [e.g. 500000]: "))
                 commission: float = float(input(f"Commission for {name} [e.g. 0.1]: "))
                 new_seller_emp: Seller = Seller(
                     name=name,
                     status=status,
+                    hours_worked=hours_worked,
                     hourly_salary=hourly_salary,
+                    sold_volume=sold_volume,
                     commission=commission
                 )
                 # add seller employee to enterprise employee dictionary
@@ -97,26 +109,30 @@ class Enterprise():
 
         counter: int = 1
 
-        for (key, value) in self.employees.items():
-            print(f"[{counter}] {key}\n")
-            print(f"Status: {value.status}")
-            if value.status == "permanent":
-                print(f"Marital status: {value.marital_status}")
-                print(f"Number of children: {value.num_children}")
-                print(f"Monthly bonus: {value.monthly_bonus}")
-                print(f"Fixed Salary: {value.fixed_salary}")
-                print(f"Days worked: {value.days_worked}")
-            if value.status == "temporal":
-                print(f"Hourly salary: {value.hourly_salary}")
-                print(f"Hours worked: {value.hours_worked}")
-            if value.status == "seller":
-                print(f"Sold volume: {value.sold_volume}")
-                print(f"Commission: {value.commission}")
-            print(f"Cumulated salary: {value.cumulated}")
-            print()
-            print("-"*30)
-            print()
-            counter += 1
+        if len(self.employees.keys()) < 1:
+            print("\nThere are currently no employees in the enterprise.\n")
+        else:
+            for (key, value) in self.employees.items():
+                print(f"[{counter}] {key}\n")
+                print(f"Status: {value.status}")
+                value.cumul_salary()
+                if value.status == "permanent":
+                    print(f"Marital status: {value.marital_status}")
+                    print(f"Number of children: {value.num_children}")
+                    print(f"Monthly bonus: {value.monthly_bonus}")
+                    print(f"Fixed Salary: {value.fixed_salary}")
+                    print(f"Days worked: {value.days_worked}")
+                if value.status == "temporal":
+                    print(f"Hourly salary: {value.hourly_salary}")
+                    print(f"Hours worked: {value.hours_worked}")
+                if value.status == "seller":
+                    print(f"Sold volume: {value.sold_volume}")
+                    print(f"Commission: {value.commission}")
+                print(f"Cumulated salary: {value.cumulated}")
+                print()
+                print("-"*30)
+                print()
+                counter += 1
     
 
     def mute_employee(self, name: str, current_role: str, new_role: str) -> None:
@@ -151,17 +167,87 @@ class Enterprise():
                                     sold_volume=sold_volume
                                 )
                                 self.employees[name] = muted_employee
-                            print(f"\nSuccessfully muted {name} from a {current_role} to {new_role} employee.\n")
+
                         elif current_role == "temporal":
-                            pass
+                            if new_role == "permanent":
+                                # is the employee married and has kids?
+                                marital_status: str = input(f"Is {name} married [ yes | no ]: ")
+                                if marital_status.lower() == "yes":
+                                    nc: int = int(input(f"Number of children [e.g. 1]: "))
+                                    days_worked: float = (20 * employee.cumulated) / (fs + mb)
+                                    muted_employee: PermanentEmployee = PermanentEmployee(
+                                        name=name,
+                                        days_worked=days_worked,
+                                        marital_status="married",
+                                        num_children=nc,
+                                        monthly_bonus=mb
+                                    )
+                                    self.employees[name] = muted_employee
+                                else:
+                                    days_worked: float = (20 * employee.cumulated) / fs
+                                    muted_employee: PermanentEmployee = PermanentEmployee(
+                                        name=name,
+                                        days_worked=days_worked
+                                    )
+                                    self.employees[name] = muted_employee
+                                
+                            elif new_role == "seller":
+                                sold_volume: float = employee.cumulated / commission
+                                muted_employee: Seller = Seller(
+                                    name=name,
+                                    sold_volume=sold_volume
+                                )
+                                self.employees[name] = muted_employee
+
                         elif current_role == "seller":
-                            pass
+                            if new_role == "permanent":
+                                # is the employee married and has kids?
+                                marital_status: str = input(f"Is {name} married [ yes | no ]: ")
+                                if marital_status.lower() == "yes":
+                                    nc: int = int(input(f"Number of children [e.g. 1]: "))
+                                    days_worked: float = (20 * employee.cumulated) / (fs + mb)
+                                    muted_employee: PermanentEmployee = PermanentEmployee(
+                                        name=name,
+                                        days_worked=days_worked,
+                                        marital_status="married",
+                                        num_children=nc,
+                                        monthly_bonus=mb
+                                    )
+                                    self.employees[name] = muted_employee
+                                else:
+                                    days_worked: float = (20 * employee.cumulated) / fs
+                                    muted_employee: PermanentEmployee = PermanentEmployee(
+                                        name=name,
+                                        days_worked=days_worked
+                                    )
+                                    self.employees[name] = muted_employee
+                            elif new_role == "temporal":
+                                hours_worked: float = employee.cumulated / hourly_salary
+                                muted_employee: TemporalEmployee = TemporalEmployee(
+                                    name=name,
+                                    hours_worked=hours_worked
+                                )
+                                self.employees[name] = muted_employee
+
+                        print(f"\nSuccessfully muted {name} from a {current_role} to {new_role} employee.\n")
                 else:
                     print(f"\n[Error]: {name} is a {employee.status} employee, not {current_role}.\n")
             else:
                 print(f"\n[Error]: {name} is not an employee in this enterprise.\n")
         else:
             print(f"\n[Error]: '{new_role}' is not an employee category in this enterprise.\n")
+
+
+    def dismiss_employee(self, name: str) -> None:
+        try:
+            if name not in self.employees.keys():
+                raise KeyError
+            else:
+                self.employees.pop(name)
+                print(f"\n{name} is no longer an employee in the enterprise.\n")
+        except KeyError:
+            print(f"\n{name} is not an employee of this enterprise.\n")
+            
 
 
 class Employee():
@@ -178,7 +264,7 @@ class PermanentEmployee(Employee):
         name: str,
         status: str = "permanent",
         days_worked: int = 0,
-        fixed_salary: float = 500000.0,
+        fixed_salary: float = fs,
         num_children: int = 0,
         marital_status: str = "not married",
         monthly_bonus: float = 0.0,
@@ -240,6 +326,6 @@ class Seller(TemporalEmployee):
     
 
     def cumul_salary(self):
-        salary: float = super().cumul_salary() + (self.sold_volume * self.commission)
+        salary: float = (self.sold_volume * self.commission)
         self.cumulated += salary
 
